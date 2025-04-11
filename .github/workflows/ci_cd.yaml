@@ -19,7 +19,9 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
+          eval $(ssh-agent -s)  # Start the SSH agent
+          ssh-add ~/.ssh/id_rsa  # Add the private key to the SSH agent
 
       - name: Copy code to /marvin_deploy using SCP
         run: |
-          scp -r ./* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/marvin_deploy
+          scp -o StrictHostKeyChecking=no -r ./* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/marvin_deploy
